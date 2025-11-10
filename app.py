@@ -76,11 +76,15 @@ def prediction():
     lag_4 = st.number_input("Demande précédente (1h)", value=1400.0)
     lag_96 = st.number_input("Demande précédente (1 jour)", value=1400.0)
     # Normalisation approximative (pour la démo)
-    X = np.array([[hour, dayofweek, month, year, quarter, is_weekend, lag_1, lag_4, lag_96]])
-    # Charger le modèle LightGBM optimisé
+    # Créer un DataFrame avec les noms de colonnes pour éviter le warning
     import joblib
     try:
+        # Charger le modèle pour récupérer les noms de features
         model = joblib.load("lgbm_optimise.pkl")
+        # Créer un DataFrame avec les noms de colonnes attendus
+        feature_names = ['hour', 'dayofweek', 'month', 'year', 'quarter', 'is_weekend', 'lag_1', 'lag_4', 'lag_96']
+        X = pd.DataFrame([[hour, dayofweek, month, year, quarter, is_weekend, lag_1, lag_4, lag_96]], 
+                        columns=feature_names)
         pred = model.predict(X)[0]
         st.success(f"Prédiction de la demande (kW) : {pred:.2f}")
     except Exception as e:
@@ -114,8 +118,9 @@ def bonus():
             df_prophet = df_prophet[['ds', 'Total_Demand_KW']].rename(columns={'Total_Demand_KW': 'y'})
         horizon = st.selectbox("Horizon de prévision", [24, 96, 672], format_func=lambda x: f"{x//96} semaine(s)" if x>=96 else f"{x} pas de temps (15min)")
         if st.button("Lancer la prévision Prophet"):
-            m = Prophet()
-            m.fit(df_prophet)
+            with st.spinner("Prophet est en train d'entraîner le modèle (cela peut prendre 1-2 minutes)..."):
+                m = Prophet()
+                m.fit(df_prophet)
             future = m.make_future_dataframe(periods=horizon, freq='15min')
             forecast = m.predict(future)
             st.line_chart(forecast.set_index('ds')[['yhat', 'yhat_lower', 'yhat_upper']].tail(horizon))
