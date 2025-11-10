@@ -28,7 +28,7 @@ def accueil():
     
     _Auteur : Abderrahman AJINOU – Université Paris Cité_
     """)
-    st.image("compare_models.png", caption="Comparaison des modèles", use_column_width=True)
+    st.image("compare_models.png", caption="Comparaison des modèles", use_container_width=True)
 
 # 2. Visualisation des données
 def visualisation():

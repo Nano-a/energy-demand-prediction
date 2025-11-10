@@ -1,9 +1,27 @@
+# Fichiers de données
+*.csv
+!requirements.txt
+
+# Modèles sauvegardés
+*.pkl
+*.h5
+*.hdf5
+*.model
+
+# Images générées (optionnel - vous pouvez les garder si vous voulez)
+*.png
+*.jpg
+*.jpeg
+
 # Python
 __pycache__/
 *.py[cod]
-*.class
+*$py.class
 *.so
 .Python
+env/
+venv/
+ENV/
 build/
 develop-eggs/
 dist/
@@ -19,45 +37,20 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
 
+# Jupyter Notebook
+.ipynb_checkpoints
+
 # Streamlit
 .streamlit/
-
-# Data files (trop volumineux pour Git)
-*.csv
-*.pkl
-*.h5
-*.hdf5
-
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-*.temp

@@ -10,6 +10,25 @@ Avec l'essor des énergies renouvelables, prévoir la demande d'énergie est cru
   - Variable cible : `Total_Demand_KW`
   - Variables explicatives créées : heure, jour de la semaine, mois, saison, week-end, lags temporels
 
+### 📥 Comment obtenir les données
+
+**IMPORTANT** : Les fichiers de données ne sont pas inclus dans ce dépôt. Vous devez les télécharger vous-même.
+
+1. **Télécharger le fichier source** :
+   - Allez sur [City Hall Electricity Usage – Boston](https://data.boston.gov/dataset/city-hall-electricity-usage)
+   - Téléchargez le fichier CSV (généralement nommé `city-hall-electricity-use.csv` ou similaire)
+   - Placez-le à la racine du projet avec le nom exact : `city-hall-electricity-use.csv`
+
+2. **Format attendu** :
+   - Le fichier doit contenir au minimum les colonnes :
+     - `DateTime_Measured` : Date et heure au format datetime
+     - `Total_Demand_KW` : Consommation électrique en kilowatts
+
+3. **Alternative** : Si vous avez vos propres données de consommation électrique :
+   - Assurez-vous qu'elles respectent le format ci-dessus
+   - Renommez votre fichier en `city-hall-electricity-use.csv`
+   - Placez-le à la racine du projet
+
 ## 3. Pipeline de traitement
 1. **Collecte et exploration des données**
 2. **Prétraitement** :
@@ -115,14 +134,56 @@ streamlit run app.py
 
 ### Prérequis
 ```bash
-pip install pandas numpy scikit-learn matplotlib seaborn lightgbm xgboost tensorflow streamlit prophet
+pip install -r requirements.txt
 ```
 
-### Lancement rapide
-1. Cloner le repository
-2. Installer les dépendances
-3. Lancer l'application web : `streamlit run app.py`
-4. Ouvrir le navigateur sur l'URL indiquée
+Ou manuellement :
+```bash
+pip install pandas numpy scikit-learn matplotlib seaborn lightgbm xgboost tensorflow streamlit prophet joblib statsmodels
+```
+
+### 📋 Ordre d'exécution des scripts
+
+**IMPORTANT** : Suivez cet ordre pour exécuter le projet correctement :
+
+1. **Télécharger les données** (voir section 2 ci-dessus)
+   - Placez `city-hall-electricity-use.csv` à la racine du projet
+
+2. **Prétraitement des données** :
+   ```bash
+   python preprocessing.py
+   ```
+   - Génère : `data_train.csv`, `data_val.csv`, `data_test.csv`
+
+3. **Entraînement des modèles** (dans n'importe quel ordre) :
+   ```bash
+   python model_baseline.py      # Baseline (régression linéaire, ARIMA)
+   python model_ml.py            # Modèles ML (RandomForest, XGBoost, LightGBM)
+   python model_lstm.py          # Modèle LSTM (peut prendre du temps)
+   ```
+
+4. **Optimisation du modèle** :
+   ```bash
+   python optimisation.py
+   ```
+   - Génère : `lgbm_optimise.pkl` (nécessaire pour l'application web)
+
+5. **Comparaison et visualisation** :
+   ```bash
+   python compare_models.py
+   python eval_visualisation.py
+   ```
+
+6. **Lancer l'application web** :
+   ```bash
+   streamlit run app.py
+   ```
+   - Ouvrez votre navigateur sur l'URL indiquée (généralement http://localhost:8501)
+
+### ⚠️ Notes importantes
+- Les fichiers de données (`data_train.csv`, `data_val.csv`, `data_test.csv`) et le modèle (`lgbm_optimise.pkl`) sont générés automatiquement lors de l'exécution des scripts
+- Si vous modifiez les données source, relancez `preprocessing.py` pour régénérer les datasets
+- L'application web nécessite que `lgbm_optimise.pkl` existe (généré par `optimisation.py`)
 
 ## 12. Auteur
 **Abderrahman AJINOU** – Université Paris Cité  

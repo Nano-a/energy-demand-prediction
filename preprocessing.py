@@ -2,10 +2,24 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import os
 
 # 1. Chargement des données
 DATA_PATH = 'city-hall-electricity-use.csv'
+
+# Vérification que le fichier existe
+if not os.path.exists(DATA_PATH):
+    print(f"❌ ERREUR : Le fichier '{DATA_PATH}' est introuvable !")
+    print(f"\n📥 Pour résoudre ce problème :")
+    print(f"1. Téléchargez les données depuis : https://data.boston.gov/dataset/city-hall-electricity-usage")
+    print(f"2. Placez le fichier CSV à la racine du projet avec le nom : {DATA_PATH}")
+    print(f"3. Le fichier doit contenir les colonnes 'DateTime_Measured' et 'Total_Demand_KW'")
+    print(f"\n💡 Alternative : Utilisez vos propres données en les renommant '{DATA_PATH}'")
+    raise FileNotFoundError(f"Le fichier '{DATA_PATH}' est requis mais introuvable. Voir le README.md pour plus d'informations.")
+
+print(f"✅ Fichier trouvé : {DATA_PATH}")
 df = pd.read_csv(DATA_PATH, parse_dates=['DateTime_Measured'])
+print(f"✅ Données chargées : {len(df)} lignes")
 
 # 2. Nettoyage des données
 # Suppression des valeurs nulles ou aberrantes (Total_Demand_KW = 0)
@@ -18,7 +32,7 @@ df = df.groupby('DateTime_Measured', as_index=False)['Total_Demand_KW'].mean()
 # On crée un index temporel complet et on détecte les trous
 df = df.sort_values('DateTime_Measured')
 df = df.set_index('DateTime_Measured')
-full_range = pd.date_range(start=df.index.min(), end=df.index.max(), freq='15T')
+full_range = pd.date_range(start=df.index.min(), end=df.index.max(), freq='15min')
 df = df.reindex(full_range)
 
 # On garde la colonne d'origine pour la demande
